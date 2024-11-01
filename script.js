@@ -1,6 +1,7 @@
 const {By, Builder, Browser} = require('selenium-webdriver');
 const assert = require('assert');
 const moment = require('moment');
+const fs = require('fs');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -12,7 +13,11 @@ async function sleep(timeOut = 500) {
     return new Promise(resolve => setTimeout(resolve, timeOut));
 }
 
-async function sendMail(type='start') {
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+async function sendMail(type='start', screenshotPath) {
     let currentTime = moment().format('YYYY/MM/DD h:mm:ss a');
     let transporter = nodemailer.createTransport({
         host: 'smtp.jaist.ac.jp',
@@ -27,6 +32,13 @@ async function sendMail(type='start') {
         from: email,
         to: email,
         subject: (type == "start" ? "Started working at " : "Ended working at ") + currentTime,
+        text: 'Attached is the screenshot you requested.',
+        attachments: [
+            {
+                filename: (type == "start" ? "start-working.png" : "end-working.png"),
+                path: screenshotPath
+            }
+        ]
     }
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
@@ -64,7 +76,10 @@ async function sendMail(type='start') {
             assert.equal("始業打刻", value);
             await startWorkBtn.click();
             await sleep();
-            await sendMail(type);
+            const screenshot = await driver.takeScreenshot();
+            const screenshotPath = 'start-working.png';
+            fs.writeFileSync(screenshotPath, screenshot, 'base64');
+            await sendMail(type, screenshotPath);
             console.log("Started working at " + moment().format('YYYY/MM/DD h:mm:ss a'));
         }
         // click on end working button
@@ -74,7 +89,10 @@ async function sendMail(type='start') {
             assert.equal("終業打刻", value);
             await startWorkBtn.click();
             await sleep();
-            await sendMail(type);
+            const screenshot = await driver.takeScreenshot();
+            const screenshotPath = 'end-working.png';
+            fs.writeFileSync(screenshotPath, screenshot, 'base64');
+            await sendMail(type, screenshotPath);
             console.log("Ended working at " + moment().format('YYYY/MM/DD h:mm:ss a'));
         }
     } catch (e) {
@@ -95,4 +113,4 @@ function isWeekend() {
     return parseInt(moment().format("d")) % 6 == 0;
 }
 
-module.exports =  { timeScript, getDay, getMonth, isWeekend };
+module.exports =  { timeScript, getDay, getMonth, isWeekend, sleep, getRandomInt };

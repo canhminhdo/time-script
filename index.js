@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const express = require('express');
-const { timeScript, getDay, getMonth, isWeekend } = require("./script.js");
+const { timeScript, getDay, getMonth, isWeekend, sleep, getRandomInt } = require("./script.js");
 
 let app = express();
 
@@ -20,16 +20,26 @@ const holidays = {
     12: [21, 24, 31],
 };
 
-// Stamp start working at 8:15:00 everyday
-cron.schedule("00 15 8 * * *", function() {
+// Stamp start working at between 8:10 ~ 8:20 everyday
+cron.schedule("00 10 8 * * *", function() {
     if (!isWeekend() && !holidays[getMonth()].includes(getDay())) {
+        waitTime = async () => {
+            let timeout = getRandomInt(10) * 1000;
+            await sleep(timeout);
+        }
+        waitTime();
         timeScript("start");
     }
 });
 
-// Stamp end working at 17:20:00 everyday
-cron.schedule("00 20 17 * * *", function() {
+// Stamp end working between 17:16 ~ 17:20 everyday
+cron.schedule("00 16 17 * * *", function() {
     if (!isWeekend() && !holidays[getMonth()].includes(getDay())) {
+        waitTime = async () => {
+            let timeout = getRandomInt(5) * 1000;
+            await sleep(timeout);
+        }
+        waitTime();
         timeScript("end");
     }
 });

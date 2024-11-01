@@ -1,7 +1,7 @@
 # Script for the Time Stamping System
 Running a script for the time stamping system automatically on every weekday except for holidays as follows:
-- start working at 8:15
-- end working at 17:20
+- start working between 8:10 ~ 8:20
+- end working between 17:15 ~ 17:20
 
 ## Requirements
 - nodejs
