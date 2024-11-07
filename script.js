@@ -82,7 +82,6 @@ async function sendMail(type='start', screenshotPath) {
             const screenshotPath = 'start-working.png';
             fs.writeFileSync(screenshotPath, screenshot, 'base64');
             await sendMail(type, screenshotPath);
-            fs.unlinkSync(screenshotPath);
             console.log("Started working at " + moment().format('YYYY/MM/DD h:mm:ss a'));
         }
         // click on end working button
@@ -96,7 +95,6 @@ async function sendMail(type='start', screenshotPath) {
             const screenshotPath = 'end-working.png';
             fs.writeFileSync(screenshotPath, screenshot, 'base64');
             await sendMail(type, screenshotPath);
-            fs.unlinkSync(screenshotPath);
             console.log("Ended working at " + moment().format('YYYY/MM/DD h:mm:ss a'));
         }
     } catch (e) {
